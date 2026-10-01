@@ -1,0 +1,328 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "ReadSmart",
+  "@appTitle": { "description": "App name" },
+
+  "loadingLibrary": "Loading your library...",
+  "@loadingLibrary": { "description": "Splash loading message" },
+
+  "navHome": "Home",
+  "@navHome": { "description": "Bottom nav: Home tab" },
+
+  "navLibrary": "Library",
+  "@navLibrary": { "description": "Bottom nav: Library tab" },
+
+  "navStats": "Stats",
+  "@navStats": { "description": "Bottom nav: Stats tab" },
+
+  "navNotes": "Notes",
+  "@navNotes": { "description": "Bottom nav: Notes tab" },
+
+  "navProfile": "Profile",
+  "@navProfile": { "description": "Bottom nav: Profile tab" },
+
+  "btnSave": "Save",
+  "@btnSave": { "description": "Generic save button" },
+
+  "btnCancel": "Cancel",
+  "@btnCancel": { "description": "Generic cancel button" },
+
+  "btnClose": "Close",
+  "@btnClose": { "description": "Generic close button" },
+
+  "btnEdit": "Edit",
+  "@btnEdit": { "description": "Generic edit button" },
+
+  "btnDelete": "Delete",
+  "@btnDelete": { "description": "Generic delete button" },
+
+  "btnCopy": "Copy",
+  "@btnCopy": { "description": "Generic copy button" },
+
+  "btnSearch": "Search",
+  "@btnSearch": { "description": "Generic search button" },
+
+  "btnDone": "Done",
+  "@btnDone": { "description": "Generic done button" },
+
+  "btnAdd": "Add",
+  "@btnAdd": { "description": "Generic add button" },
+
+  "dashboardTitle": "ReadSmart",
+  "@dashboardTitle": { "description": "Home dashboard screen title / brand" },
+
+  "dashboardContinueReading": "Continue Reading",
+  "@dashboardContinueReading": { "description": "Section header for current book" },
+
+  "dashboardQuickStats": "Quick Stats",
+  "@dashboardQuickStats": { "description": "Section header for quick stats row" },
+
+  "dashboardReadingActivity": "Reading Activity",
+  "@dashboardReadingActivity": { "description": "Section header for activity chart" },
+
+  "dashboardAICoach": "AI Reading Coach",
+  "@dashboardAICoach": { "description": "Section header for coaching tips" },
+
+  "dashboardRecentBooks": "Recently Added",
+  "@dashboardRecentBooks": { "description": "Section header for recent books" },
+
+  "libraryTitle": "E-Book Library",
+  "@libraryTitle": { "description": "E-book library screen title" },
+
+  "libraryAddBook": "Add Book",
+  "@libraryAddBook": { "description": "Add book button label" },
+
+  "libraryOpenPdf": "Open PDF",
+  "@libraryOpenPdf": { "description": "Open PDF from device button label" },
+
+  "libraryAllBooks": "All",
+  "@libraryAllBooks": { "description": "Library filter: all books" },
+
+  "libraryReading": "Reading",
+  "@libraryReading": { "description": "Library filter: currently reading" },
+
+  "libraryCompleted": "Completed",
+  "@libraryCompleted": { "description": "Library filter: completed books" },
+
+  "libraryUnread": "Unread",
+  "@libraryUnread": { "description": "Library filter: unread books" },
+
+  "libraryNoBooksFound": "No books found",
+  "@libraryNoBooksFound": { "description": "Empty state for library" },
+
+  "libraryAddFirstBook": "Add your first book to get started",
+  "@libraryAddFirstBook": { "description": "Empty state subtitle for library" },
+
+  "fullLibraryTitle": "My Library",
+  "@fullLibraryTitle": { "description": "Full library screen title" },
+
+  "statsTitle": "Reading Stats",
+  "@statsTitle": { "description": "Stats screen title" },
+
+  "statsStreak": "Day Streak",
+  "@statsStreak": { "description": "Streak metric label" },
+
+  "statsPagesRead": "Pages Read",
+  "@statsPagesRead": { "description": "Pages read metric label" },
+
+  "statsAvgSession": "Avg Session",
+  "@statsAvgSession": { "description": "Average session metric label" },
+
+  "statsBooksCompleted": "Books Done",
+  "@statsBooksCompleted": { "description": "Books completed metric label" },
+
+  "statsReadingScore": "Reading Score",
+  "@statsReadingScore": { "description": "Overall reading score label" },
+
+  "statsWeeklyActivity": "Weekly Activity",
+  "@statsWeeklyActivity": { "description": "Weekly activity chart section" },
+
+  "notesTitle": "Vocabulary Notes",
+  "@notesTitle": { "description": "Notes screen title" },
+
+  "notesSearchHint": "Search words, meanings...",
+  "@notesSearchHint": { "description": "Search bar hint in notes screen" },
+
+  "notesNoNotes": "No vocabulary notes saved yet.",
+  "@notesNoNotes": { "description": "Empty state for notes screen" },
+
+  "notesNoNotesHint": "Tap words while reading any e-book to save notes!",
+  "@notesNoNotesHint": { "description": "Empty state hint for notes screen" },
+
+  "notesFlashcards": "Flashcards",
+  "@notesFlashcards": { "description": "Review flashcards button" },
+
+  "notesOpenPage": "Open Page",
+  "@notesOpenPage": { "description": "Open page button in notes" },
+
+  "notesEditNote": "Edit Note",
+  "@notesEditNote": { "description": "Edit note dialog title" },
+
+  "notesDeleteConfirm": "Note deleted",
+  "@notesDeleteConfirm": { "description": "Snackbar message after deletion" },
+
+  "notesUndoDelete": "Undo",
+  "@notesUndoDelete": { "description": "Undo deletion in snackbar" },
+
+  "notesAllBooks": "All Books",
+  "@notesAllBooks": { "description": "Notes tab: all books filter" },
+
+  "notesWords": "{count} words",
+  "@notesWords": {
+    "description": "Word count badge in notes",
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "profileTitle": "Profile & Settings",
+  "@profileTitle": { "description": "Profile screen title" },
+
+  "profileSettings": "Settings",
+  "@profileSettings": { "description": "Settings section label" },
+
+  "profileLanguage": "Language",
+  "@profileLanguage": { "description": "Language settings menu item" },
+
+  "profileReadingGoals": "Reading Goals",
+  "@profileReadingGoals": { "description": "Reading goals section label" },
+
+  "profileTheme": "Reading Theme",
+  "@profileTheme": { "description": "Theme selector label" },
+
+  "profileEditProfile": "Edit Profile",
+  "@profileEditProfile": { "description": "Edit profile button tooltip" },
+
+  "trackerTitle": "Reading Tracker",
+  "@trackerTitle": { "description": "Physical tracker screen title" },
+
+  "trackerStart": "Start Session",
+  "@trackerStart": { "description": "Start reading session button" },
+
+  "trackerPause": "Pause",
+  "@trackerPause": { "description": "Pause session button" },
+
+  "trackerResume": "Resume",
+  "@trackerResume": { "description": "Resume session button" },
+
+  "trackerFinish": "Finish Session",
+  "@trackerFinish": { "description": "Finish session button" },
+
+  "trackerSessions": "Session History",
+  "@trackerSessions": { "description": "Session history section header" },
+
+  "trackerNoSessions": "No sessions yet",
+  "@trackerNoSessions": { "description": "Empty state for session history" },
+
+  "trackerAddBook": "Add Physical Book",
+  "@trackerAddBook": { "description": "Add physical book button" },
+
+  "readerPage": "Page {current} of {total}",
+  "@readerPage": {
+    "description": "Page indicator in reader",
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+
+  "readerNextPage": "Next Page",
+  "@readerNextPage": { "description": "Next page tooltip" },
+
+  "readerPrevPage": "Previous Page",
+  "@readerPrevPage": { "description": "Previous page tooltip" },
+
+  "readerBookmark": "Bookmark",
+  "@readerBookmark": { "description": "Bookmark action tooltip" },
+
+  "readerZoom": "Zoom",
+  "@readerZoom": { "description": "Zoom action tooltip" },
+
+  "readerDarkMode": "Dark Mode",
+  "@readerDarkMode": { "description": "Dark reading mode label" },
+
+  "readerSepiaMode": "Sepia Mode",
+  "@readerSepiaMode": { "description": "Sepia reading mode label" },
+
+  "readerLightMode": "Light Mode",
+  "@readerLightMode": { "description": "Light reading mode label" },
+
+  "readerLoadingPdf": "Loading PDF\u2026",
+  "@readerLoadingPdf": { "description": "Loading state in PDF reader" },
+
+  "readerBackToLibrary": "Back to Library",
+  "@readerBackToLibrary": { "description": "Back to library button in reader" },
+
+  "dictTitle": "Dictionary",
+  "@dictTitle": { "description": "Dictionary sheet title" },
+
+  "dictLoading": "Looking up...",
+  "@dictLoading": { "description": "Dictionary loading state" },
+
+  "dictNoResult": "No definition found",
+  "@dictNoResult": { "description": "Dictionary no result state" },
+
+  "dictNetworkError": "No internet connection",
+  "@dictNetworkError": { "description": "Dictionary network error" },
+
+  "dictEnglishMeaning": "English Meaning",
+  "@dictEnglishMeaning": { "description": "English meaning section label" },
+
+  "dictHindiMeaning": "Hindi Meaning",
+  "@dictHindiMeaning": { "description": "Hindi meaning section label" },
+
+  "dictPronounce": "Pronounce",
+  "@dictPronounce": { "description": "Pronounce button in dictionary" },
+
+  "dictSaveToNotes": "Save to Notes",
+  "@dictSaveToNotes": { "description": "Save to notes button in dictionary" },
+
+  "dictSearchAgain": "Search Again",
+  "@dictSearchAgain": { "description": "Search again button in dictionary" },
+
+  "dictCopy": "Copy",
+  "@dictCopy": { "description": "Copy meaning button in dictionary" },
+
+  "dictSavedSuccess": "Saved to your notes!",
+  "@dictSavedSuccess": { "description": "Snackbar after saving word to notes" },
+
+  "dictCopiedSuccess": "Copied to clipboard",
+  "@dictCopiedSuccess": { "description": "Snackbar after copying definition" },
+
+  "settingsTitle": "Language Settings",
+  "@settingsTitle": { "description": "Language settings screen title" },
+
+  "settingsInterfaceLang": "Interface Language",
+  "@settingsInterfaceLang": { "description": "Interface language section title" },
+
+  "settingsInterfaceLangSubtitle": "Sets the display language for all menus, labels, and buttons.",
+  "@settingsInterfaceLangSubtitle": { "description": "Interface language section subtitle" },
+
+  "settingsDictLang": "Dictionary Language",
+  "@settingsDictLang": { "description": "Dictionary language section title" },
+
+  "settingsDictLangSubtitle": "Word lookups will be translated into these languages.",
+  "@settingsDictLangSubtitle": { "description": "Dictionary language section subtitle" },
+
+  "settingsRegionalLang": "Indian Regional Languages",
+  "@settingsRegionalLang": { "description": "Regional language section title" },
+
+  "settingsRegionalLangSubtitle": "Select a regional language for supplementary vocabulary.",
+  "@settingsRegionalLangSubtitle": { "description": "Regional language subtitle" },
+
+  "settingsDualDict": "Dual-Language Lookups",
+  "@settingsDualDict": { "description": "Dual dictionary toggle label" },
+
+  "settingsDualDictSubtitle": "Show additional translation in Hindi or regional language",
+  "@settingsDualDictSubtitle": { "description": "Dual dictionary toggle subtitle" },
+
+  "settingsSaveBtn": "Save Language Settings",
+  "@settingsSaveBtn": { "description": "Save language settings button" },
+
+  "settingsSavedSuccess": "Language settings saved!",
+  "@settingsSavedSuccess": { "description": "Snackbar after saving language settings" },
+
+  "settingsExtensibilityNote": "ReadSmart uses an extensible localization architecture. Additional dialects can be added easily.",
+  "@settingsExtensibilityNote": { "description": "Extensibility info note" },
+
+  "settingsPrimaryDict": "Primary Dictionary",
+  "@settingsPrimaryDict": { "description": "Primary dictionary label" },
+
+  "settingsSecondaryTranslation": "Secondary Translation",
+  "@settingsSecondaryTranslation": { "description": "Secondary translation label" },
+
+  "coachTitle": "AI Coach",
+  "@coachTitle": { "description": "Coach screen title" },
+
+  "coachNextTip": "Next Tip",
+  "@coachNextTip": { "description": "Next tip button in coach" },
+
+  "themeDark": "Dark",
+  "@themeDark": { "description": "Dark theme label" },
+
+  "themeLight": "Light",
+  "@themeLight": { "description": "Light theme label" },
+
+  "themeSepia": "Sepia",
+  "@themeSepia": { "description": "Sepia theme label" }
+}
+
