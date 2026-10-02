@@ -5,10 +5,13 @@ import 'screens/main_shell.dart';
 import 'state/app_state.dart';
 import 'theme/app_theme.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
   final appState = AppState();
-  await appState.initialize();
+  // Launch initialization in the background so runApp() mounts immediately.
+  // This allows the Flutter engine to render its first frame immediately,
+  // dismissing Android OS LaunchTheme splash screen without hanging.
+  appState.initialize();
   runApp(ReadSmartApp(appState: appState));
 }
 
@@ -35,48 +38,6 @@ class ReadSmartApp extends StatelessWidget {
             break;
         }
 
-        if (!appState.isLoaded) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            theme: theme,
-            locale: appState.appLocale,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const Scaffold(
-              body: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE8A020)),
-                    ),
-                    SizedBox(height: 20),
-                    Text(
-                      'ReadSmart',
-                      style: TextStyle(
-                        fontFamily: 'serif',
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFE8A020),
-                      ),
-                    ),
-                    SizedBox(height: 6),
-                    Text(
-                      'Loading your library...',
-                      style: TextStyle(color: Color(0xFF888888), fontSize: 14),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        }
-
         return MaterialApp(
           title: 'ReadSmart',
           debugShowCheckedModeBanner: false,
@@ -89,9 +50,47 @@ class ReadSmartApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: AppLocalizations.supportedLocales,
-          home: MainShell(appState: appState),
+          home: appState.isLoaded
+              ? MainShell(appState: appState)
+              : const _SplashScreen(),
         );
       },
+    );
+  }
+}
+
+class _SplashScreen extends StatelessWidget {
+  const _SplashScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      backgroundColor: Color(0xFF141218),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE8A020)),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'ReadSmart',
+              style: TextStyle(
+                fontFamily: 'serif',
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFE8A020),
+              ),
+            ),
+            SizedBox(height: 6),
+            Text(
+              'Loading your library...',
+              style: TextStyle(color: Color(0xFF888888), fontSize: 14),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:book_reader/models/user_model.dart';
-import 'package:book_reader/models/vocabulary_word_model.dart';
-import 'package:book_reader/services/auth/auth_session_manager.dart';
-import 'package:book_reader/services/auth/local_auth_service.dart';
-import 'package:book_reader/state/app_state.dart';
+import 'package:read_smart/models/user_model.dart';
+import 'package:read_smart/models/vocabulary_word_model.dart';
+import 'package:read_smart/services/auth/auth_session_manager.dart';
+import 'package:read_smart/services/auth/local_auth_service.dart';
+import 'package:read_smart/state/app_state.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -120,9 +120,12 @@ void main() {
         bookId: bookA.id,
         bookTitle: bookA.title,
         word: 'Perseverance',
-        definition: 'Persistence in doing something despite difficulty.',
-        sentenceSnippet: 'The boy felt that perseverance was essential.',
-        dateAdded: DateTime.now(),
+        pronunciation: '/ˌpərsəˈvirəns/',
+        englishMeaning: 'Persistence in doing something despite difficulty.',
+        hindiMeaning: 'दृढ़ता',
+        hindiWord: 'दृढ़ता',
+        exampleSentence: 'The boy felt that perseverance was essential.',
+        dateSaved: 'Today',
         pageNumber: 50,
       );
       await appStateA.addVocabularyNote(vocabWord);
@@ -168,9 +171,12 @@ void main() {
         bookId: bookB.id,
         bookTitle: bookB.title,
         word: 'Habits',
-        definition: 'A settled or regular tendency or practice.',
-        sentenceSnippet: 'Tiny changes lead to remarkable results.',
-        dateAdded: DateTime.now(),
+        pronunciation: '/ˈhæbɪts/',
+        englishMeaning: 'A settled or regular tendency or practice.',
+        hindiMeaning: 'आदतें',
+        hindiWord: 'आदत',
+        exampleSentence: 'Tiny changes lead to remarkable results.',
+        dateSaved: 'Today',
         pageNumber: 25,
       );
       await appStateB.addVocabularyNote(vocabB);

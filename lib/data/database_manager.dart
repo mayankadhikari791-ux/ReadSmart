@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -50,9 +51,16 @@ class DatabaseManager {
 
   Future<Directory?> getStorageDirectory() async {
     try {
-      return await getApplicationDocumentsDirectory();
+      return await getApplicationDocumentsDirectory().timeout(
+        const Duration(seconds: 2),
+        onTimeout: () => Directory.systemTemp,
+      );
     } catch (_) {
-      return null;
+      try {
+        return Directory.systemTemp;
+      } catch (_) {
+        return null;
+      }
     }
   }
 
@@ -86,7 +94,11 @@ class DatabaseManager {
     }
 
     if (seedDefaults) {
-      await _seedDefaultDataIfEmpty();
+      try {
+        await _seedDefaultDataIfEmpty();
+      } catch (e) {
+        debugPrint('[DatabaseManager] Seed default data warning: $e');
+      }
     }
     _initialized = true;
   }

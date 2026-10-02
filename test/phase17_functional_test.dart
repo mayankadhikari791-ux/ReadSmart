@@ -17,6 +17,7 @@
 ///   • UI overflow guards (multiple screen sizes)
 library phase17_functional_test;
 
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:read_smart/models/book_model.dart';
@@ -60,6 +61,28 @@ VocabularyWord _makeWord({
 // ─── Group 1: App State Initialization ───────────────────────────────────────
 
 void main() {
+  setUpAll(() {
+    for (final basePath in ['.readsmart_data', '${Directory.systemTemp.path}/.readsmart_data']) {
+      final dir = Directory(basePath);
+      if (dir.existsSync()) {
+        try {
+          dir.deleteSync(recursive: true);
+        } catch (_) {}
+      }
+    }
+  });
+
+  tearDownAll(() {
+    for (final basePath in ['.readsmart_data', '${Directory.systemTemp.path}/.readsmart_data']) {
+      final dir = Directory(basePath);
+      if (dir.existsSync()) {
+        try {
+          dir.deleteSync(recursive: true);
+        } catch (_) {}
+      }
+    }
+  });
+
   // ──────────────────────────────────────────────────────────────────────────
   // 1. App State Initialization
   // ──────────────────────────────────────────────────────────────────────────
@@ -675,6 +698,17 @@ void main() {
   // 11. Reading Goals
   // ──────────────────────────────────────────────────────────────────────────
   group('Reading goals', () {
+    setUp(() {
+      for (final basePath in ['.readsmart_data', '${Directory.systemTemp.path}/.readsmart_data']) {
+        final goalsFile = File('$basePath/reading_goals.json');
+        if (goalsFile.existsSync()) {
+          try {
+            goalsFile.deleteSync();
+          } catch (_) {}
+        }
+      }
+    });
+
     test('dailyGoalMinutes default is 30', () async {
       final state = _freshAppState();
       await state.initialize();

@@ -13,8 +13,18 @@ class LocalJsonStorageDriver implements IStorageDriver {
   @override
   Future<void> initialize() async {
     _baseDir = Directory(baseDirectoryPath);
-    if (!await _baseDir.exists()) {
-      await _baseDir.create(recursive: true);
+    try {
+      if (!await _baseDir.exists()) {
+        await _baseDir.create(recursive: true);
+      }
+    } catch (_) {
+      final fallback = Directory('${Directory.systemTemp.path}/.readsmart_data');
+      try {
+        if (!await fallback.exists()) {
+          await fallback.create(recursive: true);
+        }
+        _baseDir = fallback;
+      } catch (_) {}
     }
   }
 

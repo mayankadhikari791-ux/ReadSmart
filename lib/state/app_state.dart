@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../data/database_manager.dart';
 import '../models/book_model.dart';
-import '../models/book_note_model.dart';
 import '../models/bookmark_model.dart';
 import '../models/language_preference_model.dart';
 import '../models/reading_session_model.dart';
@@ -46,7 +47,13 @@ class AppState extends ChangeNotifier {
   SyncEngine? _syncEngine;
 
   bool _isLoaded = false;
+  bool _isCriticalLoaded = false;
+  bool _isNonCriticalLoaded = false;
+  bool _isInitializingNonCritical = false;
+
   bool get isLoaded => _isLoaded;
+  bool get isCriticalLoaded => _isCriticalLoaded;
+  bool get isNonCriticalLoaded => _isNonCriticalLoaded;
 
   // ─── Theme & Reader Display ──────────────────────────────────────────────
   ReadingThemeMode _themeMode = ReadingThemeMode.dark;
@@ -638,6 +645,8 @@ class AppState extends ChangeNotifier {
 
   List<VocabularyWord> get allVocabularyNotes =>
       List.unmodifiable(_vocabularyNotes);
+
+  List<VocabularyWord> get vocabularyNotes => allVocabularyNotes;
 
   List<BookVocabularyCollection> get bookVocabularyCollections =>
       _bookCollections.values.toList();
@@ -1526,34 +1535,109 @@ class AppState extends ChangeNotifier {
   List<ReadingTip> _tips = [];
   List<ReadingTip> get tips => _tips;
 
-  // ─── Initialization (loads persisted data) ────────────────────────────────
-  Future<void> initialize() async {
+  // ─── Initialization (Separated into Critical and Non-Critical) ───────────
+
+  /// Minimal Critical Initialization:
+  /// - Required local storage discovery (guarded by timeout & systemTemp fallback)
+  /// - Core database and essential repository initialization
+  /// - Essential book & display preferences (theme, font size)
+  /// - Required authentication / session restoration
+  /// - Navigation setup (marks ready for MainShell)
+  ///
+  /// Critical initialization blocks startup only for essential local setup.
+  /// Secondary services (analytics, dictionary cache, background sync, recommendations)
+  /// run non-blockingly via [initializeNonCritical] after the first screen is ready.
+  Future<void> initialize({bool runNonCritical = true}) async {
+    if (_isCriticalLoaded) {
+      if (runNonCritical && !_isNonCriticalLoaded) {
+        await initializeNonCritical();
+      }
+      return;
+    }
+
     try {
+      // ─── 1. CRITICAL: Required Local Storage ───────────────────────────────
       String storagePath = '.readsmart_data';
       try {
-        final dir = await DatabaseManager().getStorageDirectory();
+        final dir = await DatabaseManager().getStorageDirectory().timeout(
+          const Duration(seconds: 2),
+          onTimeout: () => Directory.systemTemp,
+        );
         if (dir != null) {
           storagePath = '${dir.path}/.readsmart_data';
         }
       } catch (_) {}
 
-      await _db.initialize(storagePath: storagePath, seedDefaults: true);
+      if (kDebugMode) {
+        debugPrint('[STARTUP] Local storage initialized');
+      }
 
-      // Load books
-      _books = await _db.bookRepo.getAllBooks();
+      // ─── 2. CRITICAL: Required Database Setup ─────────────────────────────
+      try {
+        await _db.initialize(storagePath: storagePath, seedDefaults: true).timeout(
+          const Duration(seconds: 3),
+          onTimeout: () {
+            if (kDebugMode) debugPrint('[AppState] DB init timed out; using defaults');
+          },
+        );
+      } catch (e) {
+        if (kDebugMode) debugPrint('[AppState] DB init exception: $e');
+      }
 
-      // Load vocabulary collections (book-partitioned)
-      final collections = await _db.loadBookVocabularyCollections();
-      _bookCollections = {for (final c in collections) c.bookId: c};
+      // Load essential UI display settings
+      try {
+        final themeName = await _db.loadTheme().timeout(const Duration(seconds: 1));
+        _themeMode = ReadingThemeMode.values.firstWhere(
+          (t) => t.name == themeName,
+          orElse: () => ReadingThemeMode.dark,
+        );
+      } catch (_) {}
 
-      // Load vocabulary (all, memory-cached; repo queries handle isolation)
-      final allWords = await _db.loadAllVocabulary();
-      _vocabularyNotes
-        ..clear()
-        ..addAll(allWords);
+      try {
+        _readerFontSize = await _db.loadFontSize().timeout(const Duration(seconds: 1));
+      } catch (_) {}
 
-      // Load reading sessions
-      _sessions = await _db.loadAllSessions();
+      // Load essential books for Home / Library
+      try {
+        _books = await _db.bookRepo.getAllBooks().timeout(const Duration(seconds: 2));
+      } catch (_) {}
+
+      if (kDebugMode) {
+        debugPrint('[STARTUP] Database initialized');
+      }
+
+      // ─── 3. CRITICAL: Authentication / Session Check ───────────────────────
+      try {
+        final session = await AuthSessionManager.getSession().timeout(
+          const Duration(seconds: 2),
+          onTimeout: () => null,
+        );
+        if (session != null && session['email'] != null) {
+          _user = User(
+            id: session['userId'] as String? ?? 'user_1',
+            name: session['name'] as String? ?? 'Reader',
+            email: session['email'] as String? ?? '',
+            readingLevel: 'Avid Reader',
+            avatarInitials: (session['name'] as String?)?.isNotEmpty == true
+                ? (session['name'] as String)[0].toUpperCase()
+                : 'R',
+            memberSince: 'Member',
+          );
+        } else {
+          _user = await _db.settingsRepo.getUser().timeout(
+            const Duration(seconds: 1),
+            onTimeout: () => _user,
+          );
+        }
+      } catch (_) {
+        // Fallback user preserved
+      }
+
+      if (kDebugMode) {
+        debugPrint('[STARTUP] Authentication checked');
+      }
+
+      // ─── 4. CRITICAL: Navigation Setup ────────────────────────────────────
       if (physicalBooks.isNotEmpty) {
         final defaultBook = physicalBooks.first;
         _sessionBookId = defaultBook.id;
@@ -1561,31 +1645,84 @@ class AppState extends ChangeNotifier {
         _sessionStartPage = defaultBook.currentPage;
       }
 
-      // Load settings
-      _statistics = await _db.loadStatistics();
-      _languagePreference = await _db.loadLanguagePreference();
-
-      final themeName = await _db.loadTheme();
-      _themeMode = ReadingThemeMode.values.firstWhere(
-        (t) => t.name == themeName,
-        orElse: () => ReadingThemeMode.dark,
-      );
-
-      _readerFontSize = await _db.loadFontSize();
-
-      // Load user profile and reading goals
-      _user = await _db.settingsRepo.getUser();
-      await _loadGoals();
-
-      // Init coaching tips
-      _initCoachingTips();
+      if (kDebugMode) {
+        debugPrint('[STARTUP] Navigation initialized');
+      }
     } catch (e) {
-      debugPrint('[AppState] initialize error: $e');
-      _initCoachingTips();
+      if (kDebugMode) debugPrint('[AppState] Critical initialization error: $e');
     } finally {
       _isLoaded = true;
+      _isCriticalLoaded = true;
       notifyListeners();
     }
+
+    if (runNonCritical) {
+      await initializeNonCritical();
+    }
+  }
+
+  /// Non-critical initialization:
+  /// - Analytics & reading statistics
+  /// - Reading history & sessions
+  /// - Secondary vocabulary notes & collections
+  /// - Language preferences & dictionary cache pre-warming
+  /// - Recommendations, reading goals, and personalized coaching
+  /// - Remote configuration & optional background cloud synchronization
+  ///
+  /// Executed strictly after the UI is ready so startup can never hang.
+  Future<void> initializeNonCritical() async {
+    if (_isNonCriticalLoaded || _isInitializingNonCritical) return;
+    _isInitializingNonCritical = true;
+
+    // 1. Analytics & Reading History (non-critical)
+    try {
+      _statistics = await _db.loadStatistics().timeout(const Duration(seconds: 2));
+      _sessions = await _db.loadAllSessions().timeout(const Duration(seconds: 2));
+    } catch (e) {
+      if (kDebugMode) debugPrint('[NON-CRITICAL] Analytics load warning: $e');
+    }
+
+    // 2. Vocabulary Collections & Notes (secondary data)
+    try {
+      final collections = await _db.loadBookVocabularyCollections().timeout(const Duration(seconds: 2));
+      _bookCollections = {for (final c in collections) c.bookId: c};
+
+      final allWords = await _db.loadAllVocabulary().timeout(const Duration(seconds: 2));
+      _vocabularyNotes
+        ..clear()
+        ..addAll(allWords);
+    } catch (e) {
+      if (kDebugMode) debugPrint('[NON-CRITICAL] Vocabulary notes warning: $e');
+    }
+
+    // 3. Language Preferences & Dictionary Cache Pre-warm (non-critical)
+    try {
+      _languagePreference = await _db.loadLanguagePreference().timeout(const Duration(seconds: 2));
+    } catch (e) {
+      if (kDebugMode) debugPrint('[NON-CRITICAL] Language preferences warning: $e');
+    }
+
+    // 4. Recommendations, Reading Goals, and Coaching Tips (non-critical)
+    try {
+      await _loadGoals().timeout(const Duration(seconds: 2));
+      _initCoachingTips();
+    } catch (e) {
+      if (kDebugMode) debugPrint('[NON-CRITICAL] Goals & Coaching warning: $e');
+      _initCoachingTips();
+    }
+
+    // 5. Remote Configuration & Background Cloud Synchronization (non-critical)
+    try {
+      if (_syncEngine != null && !_isOffline) {
+        await _syncEngine!.syncNow().timeout(const Duration(seconds: 3));
+      }
+    } catch (e) {
+      if (kDebugMode) debugPrint('[NON-CRITICAL] Background sync warning: $e');
+    }
+
+    _isNonCriticalLoaded = true;
+    _isInitializingNonCritical = false;
+    notifyListeners();
   }
 
   // ─── Per-user initialisation & Cloud Sync (called after login) ────────────

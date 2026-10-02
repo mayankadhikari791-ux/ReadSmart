@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../state/app_state.dart';
 import '../widgets/bottom_nav_bar.dart';
@@ -18,6 +19,17 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _currentTabIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (kDebugMode) {
+        debugPrint('[STARTUP] ReadSmart UI ready');
+      }
+      widget.appState.initializeNonCritical();
+    });
+  }
 
   void _onTabSelected(int index) {
     setState(() {

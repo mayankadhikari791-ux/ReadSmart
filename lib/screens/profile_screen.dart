@@ -316,103 +316,105 @@ class ProfileScreen extends StatelessWidget {
 
   // ──────────────── 3. Appearance & Reader Settings ────────────────
   Widget _buildAppearanceSettingsCard(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.darkCard,
+    return Material(
+      color: AppColors.darkCard,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.darkBorder),
+        side: const BorderSide(color: AppColors.darkBorder),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Icon(Icons.palette_outlined, color: AppColors.primaryGold, size: 16),
-              SizedBox(width: 8),
-              Text(
-                'READER & APPEARANCE',
-                style: TextStyle(
-                  color: AppColors.primaryGold,
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.8,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.palette_outlined, color: AppColors.primaryGold, size: 16),
+                SizedBox(width: 8),
+                Text(
+                  'READER & APPEARANCE',
+                  style: TextStyle(
+                    color: AppColors.primaryGold,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.8,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
+              ],
+            ),
+            const SizedBox(height: 14),
 
-          // Theme selection
-          const Text('Reading Theme', style: TextStyle(color: Colors.white, fontSize: 13)),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              _buildThemeOption('Dark Mode', ReadingThemeMode.dark, appState),
-              const SizedBox(width: 8),
-              _buildThemeOption('Sepia Mode', ReadingThemeMode.sepia, appState),
-              const SizedBox(width: 8),
-              _buildThemeOption('Light Mode', ReadingThemeMode.light, appState),
-            ],
-          ),
-          const SizedBox(height: 16),
+            // Theme selection
+            const Text('Reading Theme', style: TextStyle(color: Colors.white, fontSize: 13)),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                _buildThemeOption('Dark Mode', ReadingThemeMode.dark, appState),
+                const SizedBox(width: 8),
+                _buildThemeOption('Sepia Mode', ReadingThemeMode.sepia, appState),
+                const SizedBox(width: 8),
+                _buildThemeOption('Light Mode', ReadingThemeMode.light, appState),
+              ],
+            ),
+            const SizedBox(height: 16),
 
-          // Font size slider
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('Default Font Size', style: TextStyle(color: Colors.white, fontSize: 13)),
-              Text(
-                '${appState.readerFontSize.round()} sp',
-                style: const TextStyle(
-                  color: AppColors.primaryGold,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
+            // Font size slider
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Default Font Size', style: TextStyle(color: Colors.white, fontSize: 13)),
+                Text(
+                  '${appState.readerFontSize.round()} sp',
+                  style: const TextStyle(
+                    color: AppColors.primaryGold,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+              ],
+            ),
+            SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                activeTrackColor: AppColors.primaryGold,
+                inactiveTrackColor: AppColors.darkSurface,
+                thumbColor: AppColors.primaryGold,
+                trackHeight: 3,
               ),
-            ],
-          ),
-          SliderTheme(
-            data: SliderTheme.of(context).copyWith(
-              activeTrackColor: AppColors.primaryGold,
-              inactiveTrackColor: AppColors.darkSurface,
-              thumbColor: AppColors.primaryGold,
-              trackHeight: 3,
+              child: Slider(
+                value: appState.readerFontSize,
+                min: 12,
+                max: 28,
+                divisions: 8,
+                onChanged: (val) => appState.setReaderFontSize(val),
+              ),
             ),
-            child: Slider(
-              value: appState.readerFontSize,
-              min: 12,
-              max: 28,
-              divisions: 8,
-              onChanged: (val) => appState.setReaderFontSize(val),
+            const SizedBox(height: 6),
+
+            // Full screen mode toggle
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              activeThumbColor: AppColors.primaryGold,
+              title: const Text('Start in Distraction-Free Fullscreen',
+                  style: TextStyle(color: Colors.white, fontSize: 13)),
+              subtitle: const Text('Hide device status bar and system bars while reading',
+                  style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
+              value: appState.startInFullScreen,
+              onChanged: (val) => appState.toggleFullScreen(val),
             ),
-          ),
-          const SizedBox(height: 6),
 
-          // Full screen mode toggle
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            activeThumbColor: AppColors.primaryGold,
-            title: const Text('Start in Distraction-Free Fullscreen',
-                style: TextStyle(color: Colors.white, fontSize: 13)),
-            subtitle: const Text('Hide device status bar and system bars while reading',
-                style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
-            value: appState.startInFullScreen,
-            onChanged: (val) => appState.toggleFullScreen(val),
-          ),
-
-          // Auto-bookmark toggle
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            activeThumbColor: AppColors.primaryGold,
-            title: const Text('Auto-Save Last Read Position',
-                style: TextStyle(color: Colors.white, fontSize: 13)),
-            subtitle: const Text('Automatically bookmark page on exit or pause',
-                style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
-            value: appState.autoBookmark,
-            onChanged: (val) => appState.toggleAutoBookmark(val),
-          ),
-        ],
+            // Auto-bookmark toggle
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              activeThumbColor: AppColors.primaryGold,
+              title: const Text('Auto-Save Last Read Position',
+                  style: TextStyle(color: Colors.white, fontSize: 13)),
+              subtitle: const Text('Automatically bookmark page on exit or pause',
+                  style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
+              value: appState.autoBookmark,
+              onChanged: (val) => appState.toggleAutoBookmark(val),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -543,143 +545,147 @@ class ProfileScreen extends StatelessWidget {
 
   // ──────────────── 6. Notifications & Reminders ────────────────
   Widget _buildNotificationsCard(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.darkCard,
+    return Material(
+      color: AppColors.darkCard,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.darkBorder),
+        side: const BorderSide(color: AppColors.darkBorder),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Icon(Icons.notifications_outlined, color: AppColors.primaryGold, size: 16),
-              SizedBox(width: 8),
-              Text(
-                'NOTIFICATIONS & REMINDERS',
-                style: TextStyle(
-                  color: AppColors.primaryGold,
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.8,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.notifications_outlined, color: AppColors.primaryGold, size: 16),
+                SizedBox(width: 8),
+                Text(
+                  'NOTIFICATIONS & REMINDERS',
+                  style: TextStyle(
+                    color: AppColors.primaryGold,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.8,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            activeThumbColor: AppColors.primaryGold,
-            title: const Text('Daily Reading Reminders',
-                style: TextStyle(color: Colors.white, fontSize: 13)),
-            subtitle: const Text('Encouraging daily prompt to protect your streak',
-                style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
-            value: appState.dailyReminderEnabled,
-            onChanged: (val) => appState.toggleDailyReminder(val),
-          ),
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            activeThumbColor: AppColors.primaryGold,
-            title: const Text('Streak & Achievement Alerts',
-                style: TextStyle(color: Colors.white, fontSize: 13)),
-            subtitle: const Text('Milestone celebrations upon completing books or streaks',
-                style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
-            value: appState.streakAlertsEnabled,
-            onChanged: (val) => appState.toggleStreakAlerts(val),
-          ),
-        ],
+              ],
+            ),
+            const SizedBox(height: 8),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              activeThumbColor: AppColors.primaryGold,
+              title: const Text('Daily Reading Reminders',
+                  style: TextStyle(color: Colors.white, fontSize: 13)),
+              subtitle: const Text('Encouraging daily prompt to protect your streak',
+                  style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
+              value: appState.dailyReminderEnabled,
+              onChanged: (val) => appState.toggleDailyReminder(val),
+            ),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              activeThumbColor: AppColors.primaryGold,
+              title: const Text('Streak & Achievement Alerts',
+                  style: TextStyle(color: Colors.white, fontSize: 13)),
+              subtitle: const Text('Milestone celebrations upon completing books or streaks',
+                  style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
+              value: appState.streakAlertsEnabled,
+              onChanged: (val) => appState.toggleStreakAlerts(val),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   // ──────────────── 7. Data Management ────────────────
   Widget _buildDataManagementCard(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.darkCard,
+    return Material(
+      color: AppColors.darkCard,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.darkBorder),
+        side: const BorderSide(color: AppColors.darkBorder),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Icon(Icons.storage_rounded, color: AppColors.primaryGold, size: 16),
-              SizedBox(width: 8),
-              Text(
-                'DATA MANAGEMENT',
-                style: TextStyle(
-                  color: AppColors.primaryGold,
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.8,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-
-          // Export Notes
-          _buildDataRow(
-            icon: Icons.file_upload_outlined,
-            title: 'Export Vocabulary Notes (.json)',
-            subtitle: 'Export ${appState.allVocabularyNotes.length} saved words & definitions',
-            onTap: () {
-              final jsonStr = appState.exportNotesAsJson();
-              Clipboard.setData(ClipboardData(text: jsonStr));
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  backgroundColor: AppColors.darkCardElevated,
-                  content: Text(
-                    'Exported ${appState.allVocabularyNotes.length} notes! Copied JSON to clipboard.',
-                    style: const TextStyle(color: AppColors.textWhite),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.storage_rounded, color: AppColors.primaryGold, size: 16),
+                SizedBox(width: 8),
+                Text(
+                  'DATA MANAGEMENT',
+                  style: TextStyle(
+                    color: AppColors.primaryGold,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.8,
                   ),
-                  duration: const Duration(seconds: 2),
                 ),
-              );
-            },
-          ),
-          const Divider(color: AppColors.darkBorder),
+              ],
+            ),
+            const SizedBox(height: 8),
 
-          // Clear Reading History with professional confirmation dialog
-          _buildDataRow(
-            icon: Icons.delete_sweep_outlined,
-            title: 'Clear Reading History',
-            subtitle: 'Wipe sessions & speed logs (keeps all books & vocabulary intact)',
-            textColor: AppColors.dangerRed,
-            onTap: () async {
-              final confirmed = await ConfirmActionDialog.show(
-                context,
-                title: 'Clear Reading History?',
-                message:
-                    'This action permanently deletes all recorded reading sessions and resets your reading speed statistics.',
-                safetyNote:
-                    'Your books and saved vocabulary notes will NOT be deleted or modified.',
-                confirmLabel: 'Clear History',
-                cancelLabel: 'Cancel',
-              );
-
-              if (confirmed) {
-                await appState.clearReadingHistory();
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      backgroundColor: AppColors.darkCardElevated,
-                      content: Text(
-                        'Reading history cleared. Books & vocabulary preserved.',
-                        style: TextStyle(color: AppColors.textWhite),
-                      ),
+            // Export Notes
+            _buildDataRow(
+              icon: Icons.file_upload_outlined,
+              title: 'Export Vocabulary Notes (.json)',
+              subtitle: 'Export ${appState.allVocabularyNotes.length} saved words & definitions',
+              onTap: () {
+                final jsonStr = appState.exportNotesAsJson();
+                Clipboard.setData(ClipboardData(text: jsonStr));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: AppColors.darkCardElevated,
+                    content: Text(
+                      'Exported ${appState.allVocabularyNotes.length} notes! Copied JSON to clipboard.',
+                      style: const TextStyle(color: AppColors.textWhite),
                     ),
-                  );
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              },
+            ),
+            const Divider(color: AppColors.darkBorder),
+
+            // Clear Reading History with professional confirmation dialog
+            _buildDataRow(
+              icon: Icons.delete_sweep_outlined,
+              title: 'Clear Reading History',
+              subtitle: 'Wipe sessions & speed logs (keeps all books & vocabulary intact)',
+              textColor: AppColors.dangerRed,
+              onTap: () async {
+                final confirmed = await ConfirmActionDialog.show(
+                  context,
+                  title: 'Clear Reading History?',
+                  message:
+                      'This action permanently deletes all recorded reading sessions and resets your reading speed statistics.',
+                  safetyNote:
+                      'Your books and saved vocabulary notes will NOT be deleted or modified.',
+                  confirmLabel: 'Clear History',
+                  cancelLabel: 'Cancel',
+                );
+
+                if (confirmed) {
+                  await appState.clearReadingHistory();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        backgroundColor: AppColors.darkCardElevated,
+                        content: Text(
+                          'Reading history cleared. Books & vocabulary preserved.',
+                          style: TextStyle(color: AppColors.textWhite),
+                        ),
+                      ),
+                    );
+                  }
                 }
-              }
-            },
-          ),
-        ],
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
