@@ -24,10 +24,12 @@ subprojects {
                     android.compileSdkVersion(36)
                 }
             }
+            try {
+                val bDir = project.layout.buildDirectory.asFile.get()
+                File(bDir, "intermediates/aar_metadata_check/debug/checkDebugAarMetadata").mkdirs()
+                File(bDir, "intermediates/aar_metadata_check/release/checkReleaseAarMetadata").mkdirs()
+            } catch (_: Exception) {}
         }
-    }
-    tasks.matching { it.name.contains("AarMetadata") }.configureEach {
-        enabled = false
     }
 }
 

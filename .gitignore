@@ -53,3 +53,4 @@ app.*.map.json
 *.aab
 .flutter-plugins
 android/local.properties
+android/.kotlin/
