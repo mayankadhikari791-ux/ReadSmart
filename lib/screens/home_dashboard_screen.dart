@@ -209,7 +209,20 @@ class HomeDashboardScreen extends StatelessWidget {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          if (activeBook.isPdf) {
+                          if (activeBook.id == 'placeholder' || appState.books.isEmpty) {
+                            onSwitchTab?.call(1); // Navigate to Library tab
+                            return;
+                          }
+                          if (activeBook.isPhysical) {
+                            appState.setSessionBook(activeBook.id, activeBook.title);
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => PhysicalTrackerScreen(
+                                  appState: appState,
+                                ),
+                              ),
+                            );
+                          } else if (activeBook.isPdf) {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (_) => PdfReaderScreen(
@@ -227,13 +240,31 @@ class HomeDashboardScreen extends StatelessWidget {
                                 builder: (_) => ReaderScreen(
                                   book: activeBook,
                                   appState: appState,
+                                  initialPage: activeBook.currentPage > 0
+                                      ? activeBook.currentPage
+                                      : 1,
                                 ),
                               ),
                             );
                           }
                         },
-                        icon: const Icon(Icons.play_arrow_rounded, size: 20),
-                        label: const Text('Continue Reading'),
+                        icon: Icon(
+                          activeBook.isPhysical
+                              ? Icons.timer_outlined
+                              : Icons.play_arrow_rounded,
+                          size: 20,
+                        ),
+                        label: Text(
+                          activeBook.id == 'placeholder'
+                              ? 'Explore Library'
+                              : (activeBook.isPhysical
+                                  ? (activeBook.currentPage > 0
+                                      ? 'Continue Tracking'
+                                      : 'Track Reading')
+                                  : (activeBook.currentPage > 0
+                                      ? 'Continue Reading'
+                                      : 'Start Reading')),
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primaryGold,
                           foregroundColor: const Color(0xFF141414),

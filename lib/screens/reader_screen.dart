@@ -462,14 +462,26 @@ class _ReaderScreenState extends State<ReaderScreen> {
                                     enabledThumbRadius: 6),
                                 trackHeight: 3,
                               ),
-                              child: Slider(
-                                value: widget.book.currentPage.toDouble(),
-                                min: 1,
-                                max: widget.book.totalPages.toDouble(),
-                                onChanged: (val) {
-                                  setState(() {
-                                    widget.book.currentPage = val.toInt();
-                                  });
+                              child: Builder(
+                                builder: (context) {
+                                  final double total = widget.book.totalPages > 1
+                                      ? widget.book.totalPages.toDouble()
+                                      : 2.0;
+                                  final double current = widget.book.currentPage.toDouble().clamp(1.0, total);
+                                  return Slider(
+                                    value: current,
+                                    min: 1.0,
+                                    max: total,
+                                    onChanged: (val) {
+                                      setState(() {
+                                        widget.book.currentPage = val.toInt();
+                                      });
+                                      widget.appState.updateBookProgress(
+                                        widget.book.id,
+                                        val.toInt(),
+                                      );
+                                    },
+                                  );
                                 },
                               ),
                             ),

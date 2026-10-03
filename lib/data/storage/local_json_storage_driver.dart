@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'i_storage_driver.dart';
 
 class LocalJsonStorageDriver implements IStorageDriver {
   final String baseDirectoryPath;
-  late final Directory _baseDir;
+  Directory? _baseDir;
   final Map<String, dynamic> _memoryCache = {};
 
   LocalJsonStorageDriver({String? path})
@@ -12,14 +13,15 @@ class LocalJsonStorageDriver implements IStorageDriver {
 
   @override
   Future<void> initialize() async {
-    _baseDir = Directory(baseDirectoryPath);
+    if (kIsWeb) return;
     try {
-      if (!await _baseDir.exists()) {
-        await _baseDir.create(recursive: true);
+      _baseDir = Directory(baseDirectoryPath);
+      if (!await _baseDir!.exists()) {
+        await _baseDir!.create(recursive: true);
       }
     } catch (_) {
-      final fallback = Directory('${Directory.systemTemp.path}/.readsmart_data');
       try {
+        final fallback = Directory('${Directory.systemTemp.path}/.readsmart_data');
         if (!await fallback.exists()) {
           await fallback.create(recursive: true);
         }
@@ -28,9 +30,10 @@ class LocalJsonStorageDriver implements IStorageDriver {
     }
   }
 
-  File _getFile(String name) {
+  File? _getFile(String name) {
+    if (kIsWeb || _baseDir == null) return null;
     final sanitized = name.replaceAll(RegExp(r'[^\w\-]'), '_');
-    return File('${_baseDir.path}/$sanitized.json');
+    return File('${_baseDir!.path}/$sanitized.json');
   }
 
   @override
@@ -39,9 +42,14 @@ class LocalJsonStorageDriver implements IStorageDriver {
       return List<Map<String, dynamic>>.from(_memoryCache[collectionName]);
     }
 
+    if (kIsWeb || _baseDir == null) {
+      _memoryCache[collectionName] = <Map<String, dynamic>>[];
+      return [];
+    }
+
     try {
       final file = _getFile(collectionName);
-      if (!await file.exists()) {
+      if (file == null || !await file.exists()) {
         _memoryCache[collectionName] = <Map<String, dynamic>>[];
         return [];
       }
@@ -70,10 +78,13 @@ class LocalJsonStorageDriver implements IStorageDriver {
   Future<void> writeList(
       String collectionName, List<Map<String, dynamic>> data) async {
     _memoryCache[collectionName] = data;
+    if (kIsWeb || _baseDir == null) return;
     try {
       final file = _getFile(collectionName);
-      final jsonStr = const JsonEncoder.withIndent('  ').convert(data);
-      await file.writeAsString(jsonStr, flush: true);
+      if (file != null) {
+        final jsonStr = const JsonEncoder.withIndent('  ').convert(data);
+        await file.writeAsString(jsonStr, flush: true);
+      }
     } catch (e) {
       // Graceful fallback for environments with restricted filesystem
     }
@@ -85,9 +96,11 @@ class LocalJsonStorageDriver implements IStorageDriver {
       return Map<String, dynamic>.from(_memoryCache[documentName]);
     }
 
+    if (kIsWeb || _baseDir == null) return null;
+
     try {
       final file = _getFile(documentName);
-      if (!await file.exists()) return null;
+      if (file == null || !await file.exists()) return null;
 
       final content = await file.readAsString();
       if (content.trim().isEmpty) return null;
@@ -108,10 +121,13 @@ class LocalJsonStorageDriver implements IStorageDriver {
   Future<void> writeMap(
       String documentName, Map<String, dynamic> data) async {
     _memoryCache[documentName] = data;
+    if (kIsWeb || _baseDir == null) return;
     try {
       final file = _getFile(documentName);
-      final jsonStr = const JsonEncoder.withIndent('  ').convert(data);
-      await file.writeAsString(jsonStr, flush: true);
+      if (file != null) {
+        final jsonStr = const JsonEncoder.withIndent('  ').convert(data);
+        await file.writeAsString(jsonStr, flush: true);
+      }
     } catch (e) {
       // Graceful fallback
     }
@@ -120,9 +136,10 @@ class LocalJsonStorageDriver implements IStorageDriver {
   @override
   Future<void> delete(String key) async {
     _memoryCache.remove(key);
+    if (kIsWeb || _baseDir == null) return;
     try {
       final file = _getFile(key);
-      if (await file.exists()) {
+      if (file != null && await file.exists()) {
         await file.delete();
       }
     } catch (e) {

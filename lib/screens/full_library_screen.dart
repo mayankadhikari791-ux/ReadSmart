@@ -12,6 +12,7 @@ import '../widgets/book_cover_widget.dart';
 import '../widgets/progress_bar_widget.dart';
 import 'pdf_reader_screen.dart';
 import 'physical_tracker_screen.dart';
+import 'reader_screen.dart';
 
 enum LibrarySortOption {
   recentlyOpened,
@@ -83,13 +84,25 @@ class _FullLibraryScreenState extends State<FullLibraryScreen>
           ),
         ),
       );
-    } else {
+    } else if (book.isPhysical) {
       // Physical Book tracking system
       widget.appState.setSessionBook(book.id, book.title);
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => PhysicalTrackerScreen(appState: widget.appState),
+        ),
+      );
+    } else {
+      // Digital E-Book Reader
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ReaderScreen(
+            book: book,
+            appState: widget.appState,
+            initialPage: book.currentPage > 0 ? book.currentPage : 1,
+          ),
         ),
       );
     }
@@ -824,9 +837,14 @@ class _FullLibraryScreenState extends State<FullLibraryScreen>
                   '${book.progressPercentInt}%',
                   style: const TextStyle(fontSize: 10, color: AppColors.textWhite),
                 ),
-                Text(
-                  book.formattedLastOpened,
-                  style: const TextStyle(fontSize: 9.5, color: AppColors.textMuted),
+                const SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    book.formattedLastOpened,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 9.5, color: AppColors.textMuted),
+                  ),
                 ),
               ],
             ),

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pdfx/pdfx.dart';
@@ -141,17 +142,29 @@ class _PdfReaderScreenState extends State<PdfReaderScreen>
       return;
     }
 
-    if (!File(path).existsSync()) {
-      setState(() {
-        _isLoading = false;
-        _loadError =
-            'PDF file not found on device.\n\nThe file may have been moved or deleted:\n$path';
-      });
-      return;
-    }
-
     try {
-      final document = await PdfDocument.openFile(path);
+      final PdfDocument document;
+      if (path.startsWith('assets/')) {
+        document = await PdfDocument.openAsset(path);
+      } else if (!kIsWeb) {
+        if (!File(path).existsSync()) {
+          setState(() {
+            _isLoading = false;
+            _loadError =
+                'PDF file not found on device.\n\nThe file may have been moved or deleted:\n$path';
+          });
+          return;
+        }
+        document = await PdfDocument.openFile(path);
+      } else {
+        setState(() {
+          _isLoading = false;
+          _loadError =
+              'Direct local file path ($path) cannot be loaded in Web browser sandbox.\nPlease upload your PDF using the "Add PDF" button.';
+        });
+        return;
+      }
+
       _pdfController = PdfController(
         document: Future.value(document),
         initialPage: _currentPage,

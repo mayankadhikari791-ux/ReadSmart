@@ -1236,7 +1236,16 @@ class AppState extends ChangeNotifier {
   }
 
   // ─── Reading Statistics & Analytics (Phase 9) ───────────────────────────
-  late ReadingStatistics _statistics;
+  ReadingStatistics _statistics = ReadingStatistics(
+    id: 'stat_default',
+    streakDays: 7,
+    totalPagesRead: 847,
+    totalReadingMinutes: 332,
+    booksCompleted: 2,
+    averageWpm: 280,
+    weeklyWpmHistory: [215.0, 230.0, 248.0, 260.0, 272.0, 285.0, 295.0],
+    userReadingScore: 78,
+  );
 
   int get dayStreak => calculateStreakDays();
   int get userReadingScore => _statistics.userReadingScore;
@@ -1558,15 +1567,17 @@ class AppState extends ChangeNotifier {
     try {
       // ─── 1. CRITICAL: Required Local Storage ───────────────────────────────
       String storagePath = '.readsmart_data';
-      try {
-        final dir = await DatabaseManager().getStorageDirectory().timeout(
-          const Duration(seconds: 2),
-          onTimeout: () => Directory.systemTemp,
-        );
-        if (dir != null) {
-          storagePath = '${dir.path}/.readsmart_data';
-        }
-      } catch (_) {}
+      if (!kIsWeb) {
+        try {
+          final dir = await DatabaseManager().getStorageDirectory().timeout(
+            const Duration(seconds: 2),
+            onTimeout: () => null,
+          );
+          if (dir != null) {
+            storagePath = '${dir.path}/.readsmart_data';
+          }
+        } catch (_) {}
+      }
 
       if (kDebugMode) {
         debugPrint('[STARTUP] Local storage initialized');
